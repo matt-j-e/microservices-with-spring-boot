@@ -16,7 +16,7 @@ public class ChallengeServiceImpl implements ChallengeService{
 
     // Builds the domain object. Null id for now
     ChallengeAttempt checkedAttempt = new ChallengeAttempt(null,
-            user.getId(), // ERROR IN BOOK TEXT - it simply says 'user', which is an object not a Long
+            user, // ERROR IN BOOK TEXT - it simply says 'user', which is an object not a Long
             attemptDTO.getFactorA(),
             attemptDTO.getFactorB(),
             attemptDTO.getGuess(),
