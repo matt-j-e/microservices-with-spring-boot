@@ -2,12 +2,11 @@ package microservices.book.multiplication.challenge;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import microservices.book.multiplication.serviceclients.GamificationServiceClient;
 import microservices.book.multiplication.user.User;
 import microservices.book.multiplication.user.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Slf4j
@@ -17,8 +16,9 @@ public class ChallengeServiceImpl implements ChallengeService{
 
   private final UserRepository userRepository;
   private final ChallengeAttemptRepository attemptRepository;
-  private final GamificationServiceClient gameClient;
+  private final ChallengeEventPub challengeEventPub;
 
+  @Transactional
   @Override
   public ChallengeAttempt verifyAttempt(ChallengeAttemptDTO attemptDTO) {
     // Check if user exists with that alias, create it if not
@@ -48,8 +48,8 @@ public class ChallengeServiceImpl implements ChallengeService{
     // Stores the attempt
     ChallengeAttempt storedAttempt = attemptRepository.save(checkedAttempt);
 
-    // Sends the attempt to Gamification and prints response
-    gameClient.sendAttempt(storedAttempt);
+    // Publishes an event to notify potentially interested subscribers
+    challengeEventPub.challengeSolved(storedAttempt);
 
     return storedAttempt;
   }
